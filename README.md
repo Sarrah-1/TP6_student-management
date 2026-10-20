@@ -1,76 +1,68 @@
 # TP 6 : Spring Boot et Swagger (student-management)
 
+Application de gestion des étudiants avec Spring Boot, MySQL, Spring Data JPA et Swagger (springdoc-openapi).
+
 ## Prérequis
 
-- JDK 21 (ou modifier `<java.version>` dans `pom.xml`)
-- MySQL démarré sur le port 3306 (MySQL Workbench, XAMPP, WAMP...)
+- JDK 21
+- MySQL ou MariaDB démarré sur le port 3306 (XAMPP, WAMP, ...)
+- phpMyAdmin, MySQL Workbench ou DBeaver
 - IntelliJ IDEA (Maven est intégré) ou Maven installé
 
-## 1. Créer la base MySQL
+## Structure
+
+```
+student-management/
+├─ pom.xml
+└─ src/
+   ├─ main/
+   │  ├─ java/com/example/studentmanagement/
+   │  │  ├─ StudentManagementApplication.java
+   │  │  ├─ entity/Student.java
+   │  │  ├─ repository/StudentRepository.java
+   │  │  ├─ service/StudentService.java
+   │  │  └─ controller/StudentController.java
+   │  └─ resources/application.properties
+   └─ test/java/com/example/studentmanagement/
+      └─ StudentControllerTest.java
+```
+
+## Configuration
+
+### 1. Créer la base de données
+
+Dans phpMyAdmin (onglet SQL) :
 
 ```sql
 CREATE DATABASE studentdb;
 ```
 
-## 2. Vérifier `src/main/resources/application.properties`
+## Tester avec Swagger
 
-```
-spring.datasource.username=root
-spring.datasource.password=
-```
+Ouvrir http://localhost:8080/swagger-ui.html
 
-Adapter le mot de passe si votre MySQL en a un. Les tables sont créées automatiquement (`ddl-auto=update`).
+Pour chaque endpoint : Try it out, puis Execute.
 
-## 3. Ouvrir le projet
+| Méthode | URL | Code attendu | Description |
+|---|---|---|---|
+| POST | /students/save | 201 | Enregistrer un étudiant |
+| GET | /students/all | 200 | Liste de tous les étudiants |
+| GET | /students/count | 200 | Nombre d'étudiants |
+| GET | /students/byYear | 200 | Nombre d'étudiants par année de naissance |
+| DELETE | /students/delete/{id} | 204 (404 si absent) | Supprimer un étudiant |
 
-IntelliJ : **File > Open**, choisir le dossier `student-management` (celui qui contient `pom.xml`), puis **Trust Project**. Attendre la fin du téléchargement des dépendances Maven.
+## Les screens
 
-## 4. Lancer
+<img width="796" height="179" alt="TP6_1" src="https://github.com/user-attachments/assets/212fa385-94ec-47d5-929a-28fe1ee59739" />
 
-- IntelliJ : ouvrir `StudentManagementApplication` puis cliquer sur la flèche verte.
-- Terminal, à la racine du projet :
+<img width="461" height="133" alt="TP6_2" src="https://github.com/user-attachments/assets/9c138041-8911-4f66-94ea-7e37414197ed" />
 
-```
-mvn spring-boot:run
-```
+<img width="944" height="352" alt="TP6_3" src="https://github.com/user-attachments/assets/c65d6d6a-bf9e-4b93-8a83-1a8c9b71a8fd" />
 
-Démarrage réussi quand la console affiche `Started StudentManagementApplication`.
+<img width="795" height="362" alt="TP6_4" src="https://github.com/user-attachments/assets/5ac7f6ad-0b2c-479d-8f32-1ba29c98f167" />
 
-## 5. Tester
+<img width="928" height="383" alt="TP6_5" src="https://github.com/user-attachments/assets/e2f776c3-db49-4fe9-b971-f08d7cc174b0" />
 
-Swagger UI : http://localhost:8080/swagger-ui.html
+<img width="512" height="200" alt="TP6_TEST" src="https://github.com/user-attachments/assets/cc52177d-ba06-4bc0-927a-e95e6437b447" />
 
-| Méthode | URL | Code attendu |
-|---|---|---|
-| POST | /students/save | 201 |
-| GET | /students/all | 200 |
-| DELETE | /students/delete/{id} | 204 (404 si absent) |
-| GET | /students/count | 200 |
-| GET | /students/byYear | 200 |
 
-Corps du POST :
-
-```json
-{ "nom": "LACHGAR", "prenom": "Mohamed", "dateNaissance": "1985-09-01" }
-```
-
-## 6. Tests unitaires
-
-```
-mvn test
-```
-
-ou clic droit sur `StudentControllerTest` puis **Run**. Ces tests n'ont pas besoin de MySQL.
-
-## Remarques
-
-- Spring Data REST expose aussi les repositories sous `/api` (réglé par `spring.data.rest.base-path=/api`) pour éviter un conflit avec le contrôleur sur `/students`.
-- Le package utilisé partout est `com.example.studentmanagement` (l'énoncé mélange `demo` et `studentmanagement`).
-- La version de springdoc est adaptée à Spring Boot 3.5 (l'énoncé indique `2.0.2`, trop ancienne).
-
-## Erreurs fréquentes
-
-- `Communications link failure` : MySQL n'est pas démarré ou le port est différent.
-- `Access denied for user 'root'` : corriger le mot de passe dans `application.properties`.
-- `Unknown database 'studentdb'` : la base n'a pas été créée (étape 1).
-- `Port 8080 was already in use` : ajouter `server.port=8081` dans `application.properties`.
